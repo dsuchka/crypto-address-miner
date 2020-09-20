@@ -8,6 +8,7 @@ public class MinerSettings {
 	private boolean reuseKeyData;
 	private long statFreqSec;
 	private int threads = Constants.CPU_COUNT;
+	private int subSeqLen = Constants.DEFAULT_SUBSEQLEN;
 	private String randomSourceFilePath = FastRandom.DEFAULT_RANDOM_SOURCE_FILE_PATH;
 
 	public boolean isDebugOutput() {
@@ -48,6 +49,14 @@ public class MinerSettings {
 
 	public void setThreads(int threads) {
 		this.threads = threads;
+	}
+
+	public int getSubSeqLen() {
+		return subSeqLen;
+	}
+
+	public void setSubSeqLen(int subSeqLen) {
+		this.subSeqLen = subSeqLen;
 	}
 
 	public String getRandomSourceFilePath() {

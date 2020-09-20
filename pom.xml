@@ -7,7 +7,7 @@
     <name>crypto-address-miner</name>
     <groupId>ru.dzhsoft.blockchain</groupId>
     <artifactId>${project.name}</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
 
     <!-- Properties: versions & vars -->
     <properties>

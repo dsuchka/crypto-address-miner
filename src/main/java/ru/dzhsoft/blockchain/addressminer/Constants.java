@@ -13,6 +13,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class Constants {
 	public static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
+	public static final int DEFAULT_SUBSEQLEN = 1_000_000;
 	public static final X9ECParameters CURVE_PARAMS = CustomNamedCurves.getByName("secp256k1");
 	public static final ECDomainParameters CURVE;
 	public static final ThreadLocal<MessageDigest> MD_SHA256_THREAD_LOCAL =

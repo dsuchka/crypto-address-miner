@@ -6,6 +6,7 @@ import org.bouncycastle.math.ec.custom.sec.SecP256K1FieldElement;
 
 import java.lang.reflect.Field;
 import java.math.BigInteger;
+import java.util.Objects;
 
 import static ru.dzhsoft.blockchain.addressminer.Constants.CURVE;
 
@@ -17,6 +18,7 @@ public class ECPointData {
 
 	private final Field fieldData;
 
+	private ECPoint ecPoint;
 	private int modCount = 0;
 
 	{
@@ -45,23 +47,47 @@ public class ECPointData {
 		}
 
 		// multiply G x Pkey
-		final ECPoint key = multiplier.multiply(CURVE.getG(), privKey).normalize();
+		ecPoint = multiplier.multiply(CURVE.getG(), privKey).normalize();
+		modCount++;
 
 		// get X & Y
+		extractXY();
+
+		// all done
+		return true;
+	}
+
+	public boolean updateNextSubsequent() {
+		Objects.requireNonNull(ecPoint, "use `update(exponent)` method first");
+
+		// just add one more G to the previous point:
+		// G x Pkey + G = G x (Pkey + 1)
+		ecPoint = ecPoint.add(CURVE.getG()).normalize();
+		modCount++;
+
+		// avoid point at infinity
+		if (ecPoint.isInfinity()) {
+			return false;
+		}
+
+		// get X & Y
+		extractXY();
+
+		// all done
+		return true;
+	}
+
+	private void extractXY() {
 		final int[] x, y;
 		try {
-			x = (int[]) fieldData.get(key.getXCoord());
-			y = (int[]) fieldData.get(key.getYCoord());
+			x = (int[]) fieldData.get(ecPoint.getXCoord());
+			y = (int[]) fieldData.get(ecPoint.getYCoord());
 		}
 		catch (IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
 		repackFieldInt2Byte(x, publicX);
 		repackFieldInt2Byte(y, publicY);
-		modCount++;
-
-		// all done
-		return true;
 	}
 
 	public int getModCount() {

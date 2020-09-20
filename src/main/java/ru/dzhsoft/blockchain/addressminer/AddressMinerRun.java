@@ -7,6 +7,7 @@ import java.util.concurrent.CountDownLatch;
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
 import static java.lang.System.err;
+import static ru.dzhsoft.blockchain.addressminer.Constants.DEFAULT_SUBSEQLEN;
 import static ru.dzhsoft.blockchain.addressminer.util.Helper.log;
 
 public class AddressMinerRun {
@@ -44,6 +45,10 @@ public class AddressMinerRun {
 
 					case "threads":
 						settings.setThreads(parseInt(getOptionParam(args, ++i)));
+						break;
+
+					case "subseqlen":
+						settings.setSubSeqLen(parseInt(getOptionParam(args, ++i)));
 						break;
 
 					default:
@@ -135,6 +140,8 @@ public class AddressMinerRun {
 		err.println("    --prng              use PRNG instead of /dev/urandom");
 		err.println("    --rndsrc <file>     use alternative random source (not /dev/urandom)");
 		err.println("    --reusekeydata      use bytes from previous exponent in next one (decrease [P]RNG usage)");
+		err.println("    --subseqlen <n>     use <n> subsequent exponents after one random is generated");
+		err.println("                        (reduce EC point evaluation, default is " + DEFAULT_SUBSEQLEN + ")");
 		err.println("    --statfreq <sec>    print statistic every <sec> seconds (0 to disable, it's default)");
 		err.println("    --threads <n>       parallel workers count (default is CPU count)");
 		err.println();

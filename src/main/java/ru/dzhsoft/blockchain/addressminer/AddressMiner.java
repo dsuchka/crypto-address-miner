@@ -180,18 +180,45 @@ public class AddressMiner {
 		private void runMainLoop(RulesBlock[] blocks, Matcher[] matchers) {
 			final AtomicReference<CharSequence> finalAddressRef = new AtomicReference<>();
 			long timerNanos;
+			int subseqs = 0;
+			boolean restartSubseq = true;
 			while (running) {
-				// fill random exponent
-				timerNanos = -nanoTimeProvider.getTimeNanos();
-				fastRandom.fillFast(exponent);
-				timerNanos += nanoTimeProvider.getTimeNanos();
-				randomFillTimeNanos.getAndAdd(timerNanos);
+				if (restartSubseq) {
+					// fill next random exponent
+					timerNanos = -nanoTimeProvider.getTimeNanos();
+					fastRandom.fillFast(exponent);
+					timerNanos += nanoTimeProvider.getTimeNanos();
+					randomFillTimeNanos.getAndAdd(timerNanos);
+					subseqs = 0;
+				}
+				else {
+					// increment previous exponent
+					increment(exponent);
+					subseqs++;
+				}
 
-				// evaluate EC point
+				// evaluate EC point for the exponent
+				boolean ecUpdated;
 				timerNanos = -nanoTimeProvider.getTimeNanos();
-				ecp.update(exponent);
+				if (restartSubseq) {
+					// use new generated exponent (evaluate EC point from scratch)
+					ecUpdated = ecp.update(exponent);
+				}
+				else {
+					// use previous exponent incremented by 1
+					ecUpdated = ecp.updateNextSubsequent();
+				}
 				timerNanos += nanoTimeProvider.getTimeNanos();
 				ecPointEvaluatingTimeNanos.getAndAdd(timerNanos);
+
+				// always restart with new exponent when failed
+				if (!ecUpdated) {
+					restartSubseq = true;
+					continue;
+				}
+
+				// restart when max is reached
+				restartSubseq = (subseqs >= settings.getSubSeqLen());
 
 				// generate addresses & check for matching for specified patterns
 				int matcherIdx = 0; // matcher index
@@ -337,6 +364,14 @@ public class AddressMiner {
 				now = currentTimeMillis();
 				nextScheduledTime += statFreqMs * (1 + (now - nextScheduledTime) / statFreqMs);
 			}
+		}
+	}
+
+	private static void increment(byte[] exponent) {
+		for (int v = 1, i = exponent.length - 1; (i >= 0) && (v != 0); i--) {
+			v = (exponent[i] & 0xFF) + v;
+			exponent[i] = (byte) v;
+			v >>>= 8;
 		}
 	}
 }
