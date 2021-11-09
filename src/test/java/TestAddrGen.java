@@ -1,4 +1,5 @@
 import org.junit.Ignore;
+import ru.dzhsoft.blockchain.addressminer.Constants;
 import ru.dzhsoft.blockchain.addressminer.addrgen.*;
 
 import static java.lang.System.out;
@@ -6,7 +7,7 @@ import static java.lang.System.out;
 @Ignore
 public class TestAddrGen {
 	public static void main(String[] args) {
-		final ECPointData ecp = new ECPointData();
+		final ECPointData ecp = new ECPointData(Constants.CURVE.getG());
 		final BTCLikeAddressHash160Generator btcHashGen = new BTCLikeAddressHash160Generator();
 		final ETHLikeAddressHash160Generator ethHashGen = new ETHLikeAddressHash160Generator();
 		final BTCAddressGenerator btcGen =

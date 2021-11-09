@@ -107,7 +107,7 @@ public class AddressMiner {
 
 	private class MinerWorker extends Thread {
 		private final byte[] exponent = new byte[32];
-		private final ECPointData ecp = new ECPointData();
+		private final ECPointData ecp = new ECPointData(settings.getGenerator());
 
 		public MinerWorker(int idx) {
 			super("MinerWorker-" + (idx + 1));

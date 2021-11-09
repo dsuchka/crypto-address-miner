@@ -9,6 +9,7 @@ import static java.lang.Long.parseLong;
 import static java.lang.System.err;
 import static ru.dzhsoft.blockchain.addressminer.Constants.DEFAULT_SUBSEQLEN;
 import static ru.dzhsoft.blockchain.addressminer.util.Helper.log;
+import static ru.dzhsoft.blockchain.addressminer.util.Helper.parseECPoint;
 
 public class AddressMinerRun {
 	public static void main(String[] args) throws Exception {
@@ -49,6 +50,12 @@ public class AddressMinerRun {
 
 					case "subseqlen":
 						settings.setSubSeqLen(parseInt(getOptionParam(args, ++i)));
+						break;
+
+					case "generator":
+						final String value = getOptionParam(args, ++i);
+						settings.setGenerator(parseECPoint(value));
+						log("using generator: " + value);
 						break;
 
 					default:
@@ -144,6 +151,7 @@ public class AddressMinerRun {
 		err.println("                        (reduce EC point evaluation, default is " + DEFAULT_SUBSEQLEN + ")");
 		err.println("    --statfreq <sec>    print statistic every <sec> seconds (0 to disable, it's default)");
 		err.println("    --threads <n>       parallel workers count (default is CPU count)");
+		err.println("    --generator <pub>	 use custom generator (points XY - 128 hex chars)");
 		err.println();
 		err.println("  Rules config format (prefixed by <#lineno: >, don't use it in a real config):");
 		err.println("    #01: [CURRENCY_1{flags}, CURRENCY_2{flags}, ..., CURRENCY_N{flags}]");

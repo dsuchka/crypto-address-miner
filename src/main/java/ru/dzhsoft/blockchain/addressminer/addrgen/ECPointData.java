@@ -17,6 +17,7 @@ public class ECPointData {
 	public final byte[] publicY = new byte[32];
 
 	private final Field fieldData;
+	private final ECPoint generator;
 
 	private ECPoint ecPoint;
 	private int modCount = 0;
@@ -29,6 +30,14 @@ public class ECPointData {
 			throw new RuntimeException(e);
 		}
 		fieldData.setAccessible(true);
+	}
+
+	public ECPointData(ECPoint generator) {
+		this.generator = generator;
+	}
+
+	public ECPoint getGenerator() {
+		return generator;
 	}
 
 	public byte getYParity() {
@@ -47,7 +56,7 @@ public class ECPointData {
 		}
 
 		// multiply G x Pkey
-		ecPoint = multiplier.multiply(CURVE.getG(), privKey).normalize();
+		ecPoint = multiplier.multiply(generator, privKey).normalize();
 		modCount++;
 
 		// get X & Y
@@ -62,7 +71,7 @@ public class ECPointData {
 
 		// just add one more G to the previous point:
 		// G x Pkey + G = G x (Pkey + 1)
-		ecPoint = ecPoint.add(CURVE.getG()).normalize();
+		ecPoint = ecPoint.add(generator).normalize();
 		modCount++;
 
 		// avoid point at infinity

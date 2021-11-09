@@ -1,5 +1,6 @@
 package ru.dzhsoft.blockchain.addressminer;
 
+import org.bouncycastle.math.ec.ECPoint;
 import ru.dzhsoft.blockchain.addressminer.util.FastRandom;
 
 public class MinerSettings {
@@ -10,6 +11,7 @@ public class MinerSettings {
 	private int threads = Constants.CPU_COUNT;
 	private int subSeqLen = Constants.DEFAULT_SUBSEQLEN;
 	private String randomSourceFilePath = FastRandom.DEFAULT_RANDOM_SOURCE_FILE_PATH;
+	private ECPoint generator = Constants.CURVE.getG();
 
 	public boolean isDebugOutput() {
 		return debugOutput;
@@ -65,5 +67,13 @@ public class MinerSettings {
 
 	public void setRandomSourceFilePath(String randomSourceFilePath) {
 		this.randomSourceFilePath = randomSourceFilePath;
+	}
+
+	public ECPoint getGenerator() {
+		return generator;
+	}
+
+	public void setGenerator(ECPoint generator) {
+		this.generator = generator;
 	}
 }
